@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренировки | CalorieAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-link i {
+            margin-right: 8px;
+        }
+
+        .workout-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .workout-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .workout-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .workout-header p {
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        .workout-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 30px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .setting-group label {
+            font-weight: 600;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        .setting-select {
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .setting-select:hover {
+            border-color: #667eea;
+        }
+
+        .setting-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            grid-column: span 1;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .workout-plan {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .workout-plan.show {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 30px;
+            color: white;
+        }
+
+        .plan-title h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .plan-title p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .plan-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-badge {
+            text-align: center;
+        }
+
+        .stat-badge .number {
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .stat-badge .label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .exercises-list {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .exercise-item {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .exercise-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .exercise-info {
+            flex: 1;
+        }
+
+        .exercise-name {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .exercise-details {
+            display: flex;
+            gap: 15px;
+            color: #64748b;
+            font-size: 14px;
+            flex-wrap: wrap;
+        }
+
+        .exercise-details span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .exercise-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-left: 15px;
+        }
+
+        .tips-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 30px;
+            padding: 25px;
+            color: white;
+            margin-top: 25px;
+        }
+
+        .tips-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .tips-list {
+            list-style: none;
+        }
+
+        .tips-list li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .workout-settings {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .exercise-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .exercise-details {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <span>Calorie<span style="font-weight: 300;">AI</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link"><i class="fas fa-calculator"></i>Калькулятор</a>
+                <a href="{{ url_for('workouts') }}" class="nav-link active"><i class="fas fa-dumbbell"></i>Тренировки</a>
+                <a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-user"></i>Профиль</a>
+                <a href="{{ url_for('logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i>Выйти</a>
+            </div>
+        </nav>
+
+        <div class="workout-card">
+            <div class="workout-header">
+                <h1>🏋️ Персональные тренировки</h1>
+                <p>Тренировки, подобранные специально под ваши цели и уровень подготовки</p>
+            </div>
+
+            <div class="workout-settings">
+                <div class="setting-group">
+                    <label><i class="fas fa-bullseye"></i> Цель тренировки</label>
+                    <select class="setting-select" id="goalSelect">
+                        <option value="weight_loss" {% if user.goal == 'weight_loss' %}selected{% endif %}>🔥 Похудение</option>
+                        <option value="muscle_gain" {% if user.goal == 'muscle_gain' %}selected{% endif %}>💪 Набор массы</option>
+                        <option value="maintenance" {% if user.goal == 'maintenance' or not user.goal %}selected{% endif %}>🧘 Поддержание тонуса</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="fas fa-chart-line"></i> Уровень подготовки</label>
+                    <select class="setting-select" id="levelSelect">
+                        <option value="beginner">🌱 Начинающий</option>
+                        <option value="intermediate">🌿 Средний</option>
+                        <option value="advanced">🌳 Продвинутый</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="fas fa-tools"></i> Оборудование</label>
+                    <select class="setting-select" id="equipmentSelect">
+                        <option value="minimal">🪑 Минимум (без оборудования)</option>
+                        <option value="full">🏋️ Полный (гантели, коврик)</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label><i class="far fa-clock"></i> Длительность</label>
+                    <select class="setting-select" id="durationSelect">
+                        <option value="15">15 минут</option>
+                        <option value="30" selected>30 минут</option>
+                        <option value="45">45 минут</option>
+                        <option value="60">60 минут</option>
+                    </select>
+                </div>
+
+                <button class="generate-btn" onclick="generateWorkout()" id="generateBtn">
+                    <i class="fas fa-magic"></i> Сгенерировать тренировку
+                </button>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="workout-plan" id="workoutPlan">
+                <div class="plan-header">
+                    <div class="plan-title">
+                        <h2 id="planName">Жиросжигающая тренировка</h2>
+                        <p id="planDescription">Интенсивная тренировка для активного похудения</p>
+                    </div>
+                    <div class="plan-stats">
+                        <div class="stat-badge">
+                            <div class="number" id="planCalories">300</div>
+                            <div class="label">ккал</div>
+                        </div>
+                        <div class="stat-badge">
+                            <div class="number" id="planDuration">30</div>
+                            <div class="label">мин</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercises-list" id="exercisesList"></div>
+
+                <div class="tips-section">
+                    <h3><i class="fas fa-lightbulb"></i> Советы для эффективной тренировки</h3>
+                    <ul class="tips-list" id="tipsList"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function generateWorkout() {
+            const generateBtn = document.getElementById('generateBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const workoutPlan = document.getElementById('workoutPlan');
+
+            // Скрываем предыдущие ошибки и план
+            errorMessage.classList.remove('show');
+            workoutPlan.classList.remove('show');
+
+            // Блокируем кнопку
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Генерация...';
+
+            try {
+                const goal = document.getElementById('goalSelect').value;
+                const level = document.getElementById('levelSelect').value;
+                const equipment = document.getElementById('equipmentSelect').value;
+                const duration = parseInt(document.getElementById('durationSelect').value);
+
+                console.log('Sending request with:', { goal, level, equipment, duration });
+
+                const response = await fetch('/get_workout_plan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ goal, level, equipment, duration })
+                });
+
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    displayWorkout(data.plan);
+                } else {
+                    showError(data.error || 'Не удалось сгенерировать тренировку');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Ошибка соединения с сервером. Проверьте подключение.');
+            } finally {
+                // Разблокируем кнопку
+                generateBtn.disabled = false;
+                generateBtn.innerHTML = '<i class="fas fa-magic"></i> Сгенерировать тренировку';
+            }
+        }
+
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+
+            setTimeout(() => {
+                errorMessage.classList.remove('show');
+            }, 5000);
+        }
+
+        function displayWorkout(plan) {
+            document.getElementById('planName').textContent = plan.name;
+            document.getElementById('planDescription').textContent = plan.description;
+            document.getElementById('planCalories').textContent = plan.calories;
+            document.getElementById('planDuration').textContent = plan.duration;
+
+            // Отображение упражнений
+            const exercisesList = document.getElementById('exercisesList');
+            exercisesList.innerHTML = '';
+
+            plan.exercises.forEach((exercise, index) => {
+                const exerciseItem = document.createElement('div');
+                exerciseItem.className = 'exercise-item';
+
+                let details = '';
+                if (exercise.sets) details += `<span><i class="fas fa-redo"></i> ${exercise.sets} подходов</span>`;
+                if (exercise.reps) details += `<span><i class="fas fa-sort-amount-up"></i> ${exercise.reps}</span>`;
+                if (exercise.duration) details += `<span><i class="far fa-clock"></i> ${exercise.duration}</span>`;
+                if (exercise.weight) details += `<span><i class="fas fa-weight-hanging"></i> ${exercise.weight}</span>`;
+                if (exercise.rest) details += `<span><i class="fas fa-coffee"></i> отдых ${exercise.rest}</span>`;
+
+                // Выбираем иконку в зависимости от упражнения
+                let icon = 'fa-heartbeat';
+                const name = exercise.name.toLowerCase();
+                if (name.includes('присед')) icon = 'fa-child';
+                else if (name.includes('отжим')) icon = 'fa-hand-peace';
+                else if (name.includes('планк')) icon = 'fa-user';
+                else if (name.includes('выпад')) icon = 'fa-shoe-prints';
+                else if (name.includes('пресс') || name.includes('скруч')) icon = 'fa-heartbeat';
+                else if (name.includes('бег') || name.includes('ходьб')) icon = 'fa-running';
+                else if (name.includes('размин')) icon = 'fa-walking';
+                else if (name.includes('растяж')) icon = 'fa-yoga';
+
+                exerciseItem.innerHTML = `
+                    <div class="exercise-info">
+                        <div class="exercise-name">${index + 1}. ${exercise.name}</div>
+                        <div class="exercise-details">${details}</div>
+                    </div>
+                    <div class="exercise-icon">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                `;
+                exercisesList.appendChild(exerciseItem);
+            });
+
+            // Отображение советов
+            const tipsList = document.getElementById('tipsList');
+            tipsList.innerHTML = '';
+            plan.tips.forEach(tip => {
+                const li = document.createElement('li');
+                li.innerHTML = `<i class="fas fa-check-circle"></i> ${tip}`;
+                tipsList.appendChild(li);
+            });
+
+            // Показываем план
+            workoutPlan.classList.add('show');
+
+            // Плавная прокрутка к плану
+            workoutPlan.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Добавляем обработчик для повторной генерации при изменении настроек
+        document.querySelectorAll('.setting-select').forEach(select => {
+            select.addEventListener('change', () => {
+                // Автоматически генерируем новую тренировку через небольшую задержку
+                clearTimeout(window.autoGenerateTimeout);
+                window.autoGenerateTimeout = setTimeout(() => {
+                    generateWorkout();
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>
